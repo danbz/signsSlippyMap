@@ -14,41 +14,24 @@
 
 #include "ofApp.h"
 
-
 void ofApp::setup()
 {
-    coordinates =
-    {
-        { 42.2610492, -91.4501953 },
-        { 43.0046471, -90.4833984 },
-        { 43.0367759, -89.3847656 },
-        { 41.9676592, -88.4619141 },
-        { 41.2117215, -89.0332031 },
-        { 40.5805847, -90.1318359 },
-        { 40.6806380, -91.1865234 },
-        { 41.1124688, -92.4169922 },
-        { 42.1959688, -93.2958984 },
-        { 43.2932003, -92.1972656 },
-        { 44.0560117, -90.7470703 }
-    };
-    
     ofJson json = ofLoadJson("provider.json");
     
     tileProvider = std::make_shared<ofxMaps::MapTileProvider>(ofxMaps::MapTileProvider::fromJSON(json));
     Poco::ThreadPool::defaultPool().addCapacity(64);
     bufferCache = std::make_shared<ofxMaps::MBTilesCache>(*tileProvider, "cache/");
-    tileSet = std::make_shared<ofxMaps::MapTileSet>(1024,
-                                                    tileProvider,
-                                                    bufferCache);
-    
+    tileSet = std::make_shared<ofxMaps::MapTileSet>(1024, tileProvider, bufferCache);
     tileLayer = std::make_shared<ofxMaps::MapTileLayer>(tileSet, 1 * 1920, 1 * 1080);
     
     ofxGeo::Coordinate chicago(41.8827, -87.6233);
     ofxGeo::Coordinate bethel(45.0579, -93.1605);
+    ofxGeo::Coordinate amsterdam(52.370216, 4.895168);
+    ofxGeo::Coordinate bristol(51.454514, -2.587910);
     
-    tileLayer->setCenter(coordinates[3], 21);
+    tileLayer->setCenter(bristol, 15);
     
-    signScale = signDist = 60.0;
+    signScale = signDist = 100.0;
     b_showGui = true;
 }
 
@@ -66,27 +49,10 @@ void ofApp::update()
 
 void ofApp::draw()
 {
-    //    ofScale(0.25, 0.25, 1);
-    //    ofBackgroundGradient(ofColor(255), ofColor(0));
-    //    ofFill();
-    //    ofSetColor(255);
-    
-    //    cam.begin();
     ofPushMatrix();
     //ofTranslate(-tileLayer->getWidth() / 2, -tileLayer->getHeight() / 2);
     tileLayer->draw(0, 0);
     ofPopMatrix();
-    
-//    ofPushStyle();
-//    ofNoFill();
-//    ofSetColor(0, 255, 0);
-//
-//    for (auto coordinate: coordinates)
-//    {
-//        auto tc = tileLayer->geoToPixels(coordinate);
-//        ofDrawCircle(tc.x, tc.y, 20);
-//    }
-//    ofPopStyle();
     
     // draw city name in place
     ofxGeo::Coordinate chicago(41.8827, -87.6233);
@@ -98,16 +64,12 @@ void ofApp::draw()
         ofxGeo::Coordinate signGeo(signsOfSurveillance[i].getLat(), signsOfSurveillance[i].getLong());
         auto  signPos = tileLayer->geoToPixels(signGeo);
         signsOfSurveillance[i].draw(signPos.x, signPos.y, 0, signScale);
-        
     }
-    // end draw city name
-    
-    //    cam.end();
     
     if (b_showGui){
-    ofDrawBitmapStringHighlight(tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
-    ofDrawBitmapStringHighlight("Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16);
-    ofDrawBitmapStringHighlight("Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2);
+        ofDrawBitmapStringHighlight(tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
+        ofDrawBitmapStringHighlight("Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16);
+        ofDrawBitmapStringHighlight("Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2);
     }
 }
 
@@ -115,11 +77,11 @@ void ofApp::draw()
 
 void ofApp::keyPressed(int key)
 {
-    // if (key == ' ')
-    //    {
-    //        setsIndex = (setsIndex + 1) % sets.size();
-    //        tileLayer->setSetId(sets[setsIndex]);
-    //    }
+//     if (key == ' ')
+//        {
+//            setsIndex = (setsIndex + 1) % sets.size();
+//            tileLayer->setSetId(sets[setsIndex]);
+//        }
     
     switch (key) {
         case 'g':
@@ -166,6 +128,17 @@ void ofApp::keyPressed(int key)
             animation = 0;
             break;
             
+        case OF_KEY_UP:
+            signScale+=5;
+            break;
+            
+        case OF_KEY_DOWN:
+            if (signScale>20){
+               signScale-=5;
+            }
+            break;
+            
+            
         default:
             break;
     }
@@ -185,7 +158,7 @@ void ofApp::keyPressed(int key)
 
 //--------------------------------------------------------------
 sign::sign(){  // sign constructor
-    
+    setup(); // set up MSAInteractiveObject
 }
 
 //--------------------------------------------------------------
@@ -201,7 +174,7 @@ void sign::load(string imagePath){
     myImageLoadSettings.exifRotate = true;
     image.load(imagePath, myImageLoadSettings );
     // input routine here to resize images to target size if not already resized...
-    //  image.resize(image.getWidth()/imageScaleFactor, image.getHeight()/imageScaleFactor);
+    // image.resize(image.getWidth()/imageScaleFactor, image.getHeight()/imageScaleFactor);
     exifData =  getEXIF(imagePath);     // load XML from jpg
 }
 
@@ -263,11 +236,26 @@ void sign::draw(int x, int y, int z, int scale ){
     // ofRotateYDeg(-mapRotationXY + 180);
     ofTranslate(-width/2.0,  -height/2.0, 0);
     
+    ofPushStyle();
+    ofSetColor(0, 0, 0, 50);
+    ofFill();
+    ofDrawRectangle( 4, 4, width, height); // draw offset drop shadow
+    ofPopStyle();
+    
+  
+    
     image.draw( 0, 0, width, height) ;
     
     // signLabel = ofToString( exifData.DateTime ) ;
     // signFont.drawString(signLabel, width/2, height + 10);
     ofPopMatrix();
+    
+    ofRect(x - width/2, y-height/2, width, height); // set up MSAInteractiveObject
+    set(x - width/2, y-height/2, width, height);
+    
+    if (isMouseOver() ) {
+        cout << "mouseover" << endl;
+    }
 }
 
 //--------------------------------------------------------------

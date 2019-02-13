@@ -21,15 +21,16 @@
 #include "ofxExif.h"
 #include "ofxGui.h"
 #include "ofxThreadedImageLoader.h"
+#include "ofxMSAInteractiveObject.h"
 
-class sign {
+
+class sign : public ofxMSAInteractiveObject{
     public :
     
     ofImage image;
     easyexif::EXIFInfo exifData;
     
-    sign(); // sign constructor
-    
+    sign(); // sign constructor    
     ~sign(); //sign destructor
     
     bool isLandscape(); // getter and setter functions
@@ -41,6 +42,44 @@ class sign {
     void load(string filePath);
     string getCountry();
     
+    virtual void onRollOver(int x, int y) {
+        printf("sign::onRollOver(x: %i, y: %i)\n", x, y);
+    }
+    
+    virtual void onRollOut() {
+        printf("sign::onRollOut()\n");
+    }
+    
+    virtual void onMouseMove(int x, int y){
+        printf("sign::onMouseMove(x: %i, y: %i)\n", x, y);
+    }
+    
+    virtual void onDragOver(int x, int y, int button) {
+        printf("sign::onDragOver(x: %i, y: %i, button: %i)\n", x, y, button);
+    }
+    
+    virtual void onDragOutside(int x, int y, int button) {
+        printf("sign::onDragOutside(x: %i, y: %i, button: %i)\n", x, y, button);
+    }
+    
+    virtual void onPress(int x, int y, int button) {
+        printf("sign::onPress(x: %i, y: %i, button: %i)\n", x, y, button);
+    }
+    
+    virtual void onRelease(int x, int y, int button) {
+        printf("sign::onRelease(x: %i, y: %i, button: %i)\n", x, y, button);
+    }
+    
+    virtual void onReleaseOutside(int x, int y, int button) {
+        printf("sign::onReleaseOutside(x: %i, y: %i, button: %i)\n", x, y, button);
+    }
+    
+    void setup() {
+        printf("sign::setup() - hello!\n");
+        enableMouseEvents();
+        enableKeyEvents();
+    }
+    
     private :
     
 };
@@ -51,22 +90,17 @@ public:
     void setup() override;
     void update() override;
     void draw() override;
-
     void keyPressed(int key) override;
 
     std::shared_ptr<ofxMaps::MBTilesCache> bufferCache;
     std::shared_ptr<ofxMaps::MapTileLayer> tileLayer;
     std::shared_ptr<ofxMaps::MapTileSet> tileSet;
     std::shared_ptr<ofxMaps::MapTileProvider> tileProvider;
-
     std::vector<ofxGeo::Coordinate> coordinates;
 
     std::vector<std::string> sets;
     int setsIndex = 0;
-
     float animation = 0;
-
-    ofEasyCam cam;
     
     void processOpenFileSelection(ofFileDialogResult openFileResult);
     void sortSigns();

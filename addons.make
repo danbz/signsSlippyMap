@@ -4,6 +4,7 @@ ofxGeo
 ofxGui
 ofxHTTP
 ofxIO
+ofxMSAInteractiveObject
 ofxMaps
 ofxMediaType
 ofxNetworkUtils

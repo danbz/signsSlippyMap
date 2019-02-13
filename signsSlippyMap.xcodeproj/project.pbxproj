@@ -3455,6 +3455,70 @@
 				<key>sourceTree</key>
 				<string>SOURCE_ROOT</string>
 			</dict>
+			<key>4A2C7833E609686E9ECD8A8C</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.c.h</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxMSAInteractiveObject.h</string>
+				<key>path</key>
+				<string>../../../addons/ofxMSAInteractiveObject/src/ofxMSAInteractiveObject.h</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
+			<key>082C54A9DF8AC3F426D5FFF4</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>CE0949C9F18BE455D5E6CD10</string>
+					<string>4A2C7833E609686E9ECD8A8C</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>src</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>734AC65571ADBB395C126C1A</key>
+			<dict>
+				<key>children</key>
+				<array>
+					<string>082C54A9DF8AC3F426D5FFF4</string>
+				</array>
+				<key>isa</key>
+				<string>PBXGroup</string>
+				<key>name</key>
+				<string>ofxMSAInteractiveObject</string>
+				<key>sourceTree</key>
+				<string>&lt;group&gt;</string>
+			</dict>
+			<key>D1395DD979998DCFFA40ACAC</key>
+			<dict>
+				<key>fileRef</key>
+				<string>CE0949C9F18BE455D5E6CD10</string>
+				<key>isa</key>
+				<string>PBXBuildFile</string>
+			</dict>
+			<key>CE0949C9F18BE455D5E6CD10</key>
+			<dict>
+				<key>explicitFileType</key>
+				<string>sourcecode.cpp.cpp</string>
+				<key>fileEncoding</key>
+				<string>4</string>
+				<key>isa</key>
+				<string>PBXFileReference</string>
+				<key>name</key>
+				<string>ofxMSAInteractiveObject.cpp</string>
+				<key>path</key>
+				<string>../../../addons/ofxMSAInteractiveObject/src/ofxMSAInteractiveObject.cpp</string>
+				<key>sourceTree</key>
+				<string>SOURCE_ROOT</string>
+			</dict>
 			<key>D86C6322CF7554A9BE5EB8BF</key>
 			<dict>
 				<key>children</key>
@@ -11045,6 +11109,7 @@ fi
 						<string>../../../addons/ofxIO/libs/snappy</string>
 						<string>../../../addons/ofxIO/libs/snappy/src</string>
 						<string>../../../addons/ofxIO/src</string>
+						<string>../../../addons/ofxMSAInteractiveObject/src</string>
 						<string>../../../addons/ofxMaps/libs</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps/includes</string>
@@ -11176,6 +11241,7 @@ fi
 						<string>../../../addons/ofxIO/libs/snappy</string>
 						<string>../../../addons/ofxIO/libs/snappy/src</string>
 						<string>../../../addons/ofxIO/src</string>
+						<string>../../../addons/ofxMSAInteractiveObject/src</string>
 						<string>../../../addons/ofxMaps/libs</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps/includes</string>
@@ -11272,6 +11338,7 @@ fi
 					<string>480A780D8D0308AE4A368801</string>
 					<string>02258B57617E63D6251EF763</string>
 					<string>A8792B4B23B2F70E1065D67F</string>
+					<string>734AC65571ADBB395C126C1A</string>
 					<string>7C00DE8D41A7F290641205F6</string>
 					<string>6827DB82AAD37B20D509DEA8</string>
 					<string>406D7399CEFC4C539B676AFF</string>
@@ -14092,6 +14159,7 @@ fi
 						<string>../../../addons/ofxIO/libs/snappy</string>
 						<string>../../../addons/ofxIO/libs/snappy/src</string>
 						<string>../../../addons/ofxIO/src</string>
+						<string>../../../addons/ofxMSAInteractiveObject/src</string>
 						<string>../../../addons/ofxMaps/libs</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps/includes</string>
@@ -14243,6 +14311,7 @@ fi
 						<string>../../../addons/ofxIO/libs/snappy</string>
 						<string>../../../addons/ofxIO/libs/snappy/src</string>
 						<string>../../../addons/ofxIO/src</string>
+						<string>../../../addons/ofxMSAInteractiveObject/src</string>
 						<string>../../../addons/ofxMaps/libs</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps/includes</string>
@@ -14457,6 +14526,7 @@ fi
 					<string>D81A435CE7FDF51B41956210</string>
 					<string>1298066D39CE7EC3DA60256A</string>
 					<string>868BEDC19B53FD512D7E3100</string>
+					<string>D1395DD979998DCFFA40ACAC</string>
 					<string>D314E8CA4D0C1B980B218F4F</string>
 					<string>0BE051039384CFF862529621</string>
 					<string>29C443F97CDEB8CA02B89055</string>
@@ -14635,6 +14705,7 @@ fi
 						<string>../../../addons/ofxIO/libs/snappy</string>
 						<string>../../../addons/ofxIO/libs/snappy/src</string>
 						<string>../../../addons/ofxIO/src</string>
+						<string>../../../addons/ofxMSAInteractiveObject/src</string>
 						<string>../../../addons/ofxMaps/libs</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps/includes</string>
@@ -14786,6 +14857,7 @@ fi
 						<string>../../../addons/ofxIO/libs/snappy</string>
 						<string>../../../addons/ofxIO/libs/snappy/src</string>
 						<string>../../../addons/ofxIO/src</string>
+						<string>../../../addons/ofxMSAInteractiveObject/src</string>
 						<string>../../../addons/ofxMaps/libs</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps</string>
 						<string>../../../addons/ofxMaps/libs/ofxMaps/includes</string>
