@@ -27,4 +27,6 @@ uses slippyMap loading to plot streetmaps and load and display signs of Surveill
 
 * l load images with exif data
 * +/- zoom in / out
-* w/a/s/d up down left right movement in map 
+* w/a/s/d up down left right movement in map
+
+![screenshot](signsSlippyMap.png)
