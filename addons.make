@@ -1,0 +1,16 @@
+ofxCache
+ofxExif
+ofxGeo
+ofxGui
+ofxHTTP
+ofxIO
+ofxMaps
+ofxMediaType
+ofxNetworkUtils
+ofxPoco
+ofxSQLiteCpp
+ofxSSLManager
+ofxSpatialHash
+ofxTaskQueue
+ofxThreadedImageLoader
+ofxXmlSettings
