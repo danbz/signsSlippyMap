@@ -74,5 +74,6 @@ public:
     
     vector<sign> signsOfSurveillance;
     float signScale, signDist;
+    bool b_showGui;
     
 };

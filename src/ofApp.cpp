@@ -49,6 +49,7 @@ void ofApp::setup()
     tileLayer->setCenter(coordinates[3], 21);
     
     signScale = signDist = 60.0;
+    b_showGui = true;
 }
 
 //--------------------------------------------------------------
@@ -76,16 +77,16 @@ void ofApp::draw()
     tileLayer->draw(0, 0);
     ofPopMatrix();
     
-    ofPushStyle();
-    ofNoFill();
-    ofSetColor(0, 255, 0);
-    
-    for (auto coordinate: coordinates)
-    {
-        auto tc = tileLayer->geoToPixels(coordinate);
-        ofDrawCircle(tc.x, tc.y, 20);
-    }
-    ofPopStyle();
+//    ofPushStyle();
+//    ofNoFill();
+//    ofSetColor(0, 255, 0);
+//
+//    for (auto coordinate: coordinates)
+//    {
+//        auto tc = tileLayer->geoToPixels(coordinate);
+//        ofDrawCircle(tc.x, tc.y, 20);
+//    }
+//    ofPopStyle();
     
     // draw city name in place
     ofxGeo::Coordinate chicago(41.8827, -87.6233);
@@ -103,61 +104,71 @@ void ofApp::draw()
     
     //    cam.end();
     
+    if (b_showGui){
     ofDrawBitmapStringHighlight(tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
     ofDrawBitmapStringHighlight("Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16);
     ofDrawBitmapStringHighlight("Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2);
-    
+    }
 }
 
 //--------------------------------------------------------------
 
 void ofApp::keyPressed(int key)
 {
-    if (key == 'f' || key == 'F')
-    {
-        ofToggleFullscreen();
-    }
-    else if (key == '-')
-    {
-        tileLayer->setCenter(tileLayer->getCenter().getZoomedBy(-1));
-    }
-    else if (key == '=')
-    {
-        tileLayer->setCenter(tileLayer->getCenter().getZoomedBy(1));
-    }
-    else if (key == 'w')
-    {
-        tileLayer->setCenter(tileLayer->getCenter().getNeighborUp());
-    }
-    else if (key == 'a')
-    {
-        tileLayer->setCenter(tileLayer->getCenter().getNeighborLeft());
-    }
-    else if (key == 's')
-    {
-        tileLayer->setCenter(tileLayer->getCenter().getNeighborDown());
-    }
-    else if (key == 'd')
-    {
-        tileLayer->setCenter(tileLayer->getCenter().getNeighborRight());
-    }
-    else if (key == '1')
-    {
-        animation -= 0.01;;
-    }
-    else if (key == '2')
-    {
-        animation += 0.01;;
-    }
-    else if (key == '3')
-    {
-        animation = 0;
-    }
-    //    else if (key == ' ')
+    // if (key == ' ')
     //    {
     //        setsIndex = (setsIndex + 1) % sets.size();
     //        tileLayer->setSetId(sets[setsIndex]);
     //    }
+    
+    switch (key) {
+        case 'g':
+            b_showGui = !b_showGui;
+            break;
+            
+        case 'f':
+            ofToggleFullscreen();
+            break;
+            
+        case '-':
+            tileLayer->setCenter(tileLayer->getCenter().getZoomedBy(-1));
+            break;
+            
+        case '=':
+            tileLayer->setCenter(tileLayer->getCenter().getZoomedBy(1));
+            break;
+            
+        case 'w':
+            tileLayer->setCenter(tileLayer->getCenter().getNeighborUp());
+            break;
+            
+        case 'a':
+            tileLayer->setCenter(tileLayer->getCenter().getNeighborLeft());
+            break;
+            
+        case 's':
+            tileLayer->setCenter(tileLayer->getCenter().getNeighborDown());
+            break;
+            
+        case 'd':
+            tileLayer->setCenter(tileLayer->getCenter().getNeighborRight());
+            break;
+            
+        case '1':
+            animation -= 0.01;
+            break;
+            
+        case '2':
+            animation += 0.01;
+            break;
+            
+        case '3':
+            animation = 0;
+            break;
+            
+        default:
+            break;
+    }
     
     if (key == 'l'){
         ofFileDialogResult openFileResult= ofSystemLoadDialog("Select a folder with jpg image files");
@@ -170,9 +181,7 @@ void ofApp::keyPressed(int key)
             ofLogVerbose("User hit cancel");
         }
     }
-    
 }
-
 
 //--------------------------------------------------------------
 sign::sign(){  // sign constructor
