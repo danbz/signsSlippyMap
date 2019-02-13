@@ -29,5 +29,6 @@ uses slippyMap loading to plot streetmaps and load and display signs of Surveill
 * '+' '-' zoom in / out
 * w/a/s/d up down left right movement in map
 * 'g' toggle gui
+* '1' '2' '3' scroll left/right/stop
 
 ![screenshot](signsSlippyMap.png)
