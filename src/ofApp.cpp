@@ -77,11 +77,11 @@ void ofApp::draw()
 
 void ofApp::keyPressed(int key)
 {
-//     if (key == ' ')
-//        {
-//            setsIndex = (setsIndex + 1) % sets.size();
-//            tileLayer->setSetId(sets[setsIndex]);
-//        }
+    //     if (key == ' ')
+    //        {
+    //            setsIndex = (setsIndex + 1) % sets.size();
+    //            tileLayer->setSetId(sets[setsIndex]);
+    //        }
     
     switch (key) {
         case 'g':
@@ -134,7 +134,7 @@ void ofApp::keyPressed(int key)
             
         case OF_KEY_DOWN:
             if (signScale>20){
-               signScale-=5;
+                signScale-=5;
             }
             break;
             
@@ -210,8 +210,16 @@ string sign::getCountry(){
 
 //--------------------------------------------------------------
 void sign::draw(int x, int y, int z, int scale ){
-    int width, height;
+    int width, height, offset;
+    offset = 4;
     string signLabel;
+    
+    if (isMouseOver() ) {
+        cout << "mouseover" << this << endl;
+        scale *=2;
+        offset = 10;
+    }
+    
     if (image.getWidth() > image.getHeight() ){ // determine portrait or landscape orientation
         width =  scale;
         height =  scale * 0.75;
@@ -237,31 +245,27 @@ void sign::draw(int x, int y, int z, int scale ){
     ofTranslate(-width/2.0,  -height/2.0, 0);
     
     ofPushStyle();
-    ofSetColor(0, 0, 0, 50);
+    ofSetColor(0, 0, 0, 100);
     ofFill();
-    ofDrawRectangle( 4, 4, width, height); // draw offset drop shadow
+    ofDrawRectangle( offset, offset, width, height); // draw offset drop shadow
+    
+    
+    
+    if (isMouseOver()){ // draw date label if we are rolling over this image
+        ofSetColor(0, 0, 0, 255);
+        signLabel = ofToString( exifData.DateTime ) ;
+        //signFont.drawString(signLabel, width/2, height + 10);
+        ofDrawBitmapString(signLabel, 0, height +  offset *2);
+    }
+    
     ofPopStyle();
-    
-  
-    
     image.draw( 0, 0, width, height) ;
-    
-    // signLabel = ofToString( exifData.DateTime ) ;
-    // signFont.drawString(signLabel, width/2, height + 10);
     ofPopMatrix();
     
-    if(isMousePressed()) ofSetHexColor(DOWN_COLOR);
-    else if(isMouseOver()) ofSetHexColor(OVER_COLOR);
-    else ofSetHexColor(IDLE_COLOR);
+    
     ofRect(x - width/2, y-height/2, width, height); // set up MSAInteractiveObject
     set(x - width/2, y-height/2, width, height);
     
-    
-    
-    
-    if (isMouseOver() ) {
-        cout << "mouseover" << endl;
-    }
 }
 
 //--------------------------------------------------------------
