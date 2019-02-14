@@ -250,8 +250,14 @@ void sign::draw(int x, int y, int z, int scale ){
     // signFont.drawString(signLabel, width/2, height + 10);
     ofPopMatrix();
     
+    if(isMousePressed()) ofSetHexColor(DOWN_COLOR);
+    else if(isMouseOver()) ofSetHexColor(OVER_COLOR);
+    else ofSetHexColor(IDLE_COLOR);
     ofRect(x - width/2, y-height/2, width, height); // set up MSAInteractiveObject
     set(x - width/2, y-height/2, width, height);
+    
+    
+    
     
     if (isMouseOver() ) {
         cout << "mouseover" << endl;
@@ -279,6 +285,11 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult){
                 sign newSign;
                 newSign.load(imageDirectory.getPath(i)) ;
                 signsOfSurveillance.push_back(newSign);
+            }
+            //enable MSAInteractiveObjects
+            for (int i=0; i<signsOfSurveillance.size();i++){
+                signsOfSurveillance[i].enableAppEvents();
+                signsOfSurveillance[i].enableMouseEvents();
             }
         }
     }

@@ -23,6 +23,9 @@
 #include "ofxThreadedImageLoader.h"
 #include "ofxMSAInteractiveObject.h"
 
+#define        IDLE_COLOR        0xFFFFFF
+#define        OVER_COLOR        0x00FF00
+#define        DOWN_COLOR        0xFF0000
 
 class sign : public ofxMSAInteractiveObject{
     public :
@@ -48,18 +51,6 @@ class sign : public ofxMSAInteractiveObject{
     
     virtual void onRollOut() {
         printf("sign::onRollOut()\n");
-    }
-    
-    virtual void onMouseMove(int x, int y){
-        printf("sign::onMouseMove(x: %i, y: %i)\n", x, y);
-    }
-    
-    virtual void onDragOver(int x, int y, int button) {
-        printf("sign::onDragOver(x: %i, y: %i, button: %i)\n", x, y, button);
-    }
-    
-    virtual void onDragOutside(int x, int y, int button) {
-        printf("sign::onDragOutside(x: %i, y: %i, button: %i)\n", x, y, button);
     }
     
     virtual void onPress(int x, int y, int button) {
