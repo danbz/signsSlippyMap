@@ -1,6 +1,5 @@
 //
-// based on example code Copyright (c) 2014 Christopher Baker <https://christopherbaker.net>
-//
+// slippy map elements based on example code Copyright (c) 2014 Christopher Baker <https://christopherbaker.net>
 // SPDX-License-Identifier:	MIT
 //
 /*
@@ -49,6 +48,7 @@ void ofApp::update()
 
 void ofApp::draw()
 {
+    ofEnableDepthTest();
     ofPushMatrix();
     //ofTranslate(-tileLayer->getWidth() / 2, -tileLayer->getHeight() / 2);
     tileLayer->draw(0, 0);
@@ -63,8 +63,9 @@ void ofApp::draw()
     for(unsigned int i = 0; i < signsOfSurveillance.size(); i++){
         ofxGeo::Coordinate signGeo(signsOfSurveillance[i].getLat(), signsOfSurveillance[i].getLong());
         auto  signPos = tileLayer->geoToPixels(signGeo);
-        signsOfSurveillance[i].draw(signPos.x, signPos.y, 0, signScale);
+        signsOfSurveillance[i].draw(signPos.x, signPos.y, 1, signScale);
     }
+    ofDisableDepthTest();
     
     if (b_showGui){
         ofDrawBitmapStringHighlight(tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
@@ -218,6 +219,7 @@ void sign::draw(int x, int y, int z, int scale ){
         cout << "mouseover" << this << endl;
         scale *=2;
         offset = 10;
+        z=10;
     }
     
     if (image.getWidth() > image.getHeight() ){ // determine portrait or landscape orientation
@@ -259,7 +261,7 @@ void sign::draw(int x, int y, int z, int scale ){
     }
     
     ofPopStyle();
-    image.draw( 0, 0, width, height) ;
+    image.draw( 0, 0, 1, width, height) ;
     ofPopMatrix();
     
     
