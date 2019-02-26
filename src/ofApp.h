@@ -25,6 +25,10 @@
 #define        IDLE_COLOR        0xFFFFFF
 #define        OVER_COLOR        0x00FF00
 #define        DOWN_COLOR        0xFF0000
+#define        SIGN_SHADOW_COLOR 0x000000
+#define        SIGN_LABEL_COLOR   0xFFFFFF
+
+
 
 class sign : public ofxMSAInteractiveObject{
     public :
@@ -44,6 +48,10 @@ class sign : public ofxMSAInteractiveObject{
     void load(string filePath);
     string getCountry();
     
+    float  dropShadowOffset;
+    int mapDotRadius;
+
+    //  ofxMSAInteractive event responses for sign
     virtual void onRollOver(int x, int y) {
         printf("sign::onRollOver(x: %i, y: %i)\n", x, y);
     }
@@ -65,7 +73,6 @@ class sign : public ofxMSAInteractiveObject{
     }
     
     void setup() {
-        printf("sign::setup() - hello!\n");
         enableMouseEvents();
         enableKeyEvents();
     }
@@ -97,7 +104,8 @@ public:
     static  bool sortDescending(const sign &i, const sign &j);
     
     vector<sign> signsOfSurveillance;
-    float signScale, signDist;
+    float signScale, signDist ;
     bool b_showGui;
     
+    ofEasyCam cam;
 };

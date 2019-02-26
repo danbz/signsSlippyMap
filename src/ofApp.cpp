@@ -16,7 +16,6 @@
 void ofApp::setup()
 {
     ofJson json = ofLoadJson("provider.json");
-    
     tileProvider = std::make_shared<ofxMaps::MapTileProvider>(ofxMaps::MapTileProvider::fromJSON(json));
     Poco::ThreadPool::defaultPool().addCapacity(64);
     bufferCache = std::make_shared<ofxMaps::MBTilesCache>(*tileProvider, "cache/");
@@ -49,6 +48,7 @@ void ofApp::update()
 void ofApp::draw()
 {
     ofEnableDepthTest();
+    //cam.begin();
     ofPushMatrix();
     //ofTranslate(-tileLayer->getWidth() / 2, -tileLayer->getHeight() / 2);
     tileLayer->draw(0, 0);
@@ -65,9 +65,11 @@ void ofApp::draw()
         auto  signPos = tileLayer->geoToPixels(signGeo);
         signsOfSurveillance[i].draw(signPos.x, signPos.y, 1, signScale);
     }
+   // cam.end();
     ofDisableDepthTest();
     
     if (b_showGui){
+        ofDrawBitmapStringHighlight(ofToString(signsOfSurveillance.size() ) + " signs displayed", 14, ofGetHeight() - 48);
         ofDrawBitmapStringHighlight(tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
         ofDrawBitmapStringHighlight("Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16);
         ofDrawBitmapStringHighlight("Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2);
@@ -139,7 +141,6 @@ void ofApp::keyPressed(int key)
             }
             break;
             
-            
         default:
             break;
     }
@@ -160,6 +161,8 @@ void ofApp::keyPressed(int key)
 //--------------------------------------------------------------
 sign::sign(){  // sign constructor
     setup(); // set up MSAInteractiveObject
+    mapDotRadius = 10;
+    dropShadowOffset = 4;
 }
 
 //--------------------------------------------------------------
@@ -211,15 +214,14 @@ string sign::getCountry(){
 
 //--------------------------------------------------------------
 void sign::draw(int x, int y, int z, int scale ){
-    int width, height, offset;
-    offset = 4;
+    int width, height;
     string signLabel;
     
     if (isMouseOver() ) {
         cout << "mouseover" << this << endl;
-        scale *=2;
-        offset = 10;
-        z=10;
+        scale *=4;
+      //  dropShadowOffset = 10;
+        z=2;
     }
     
     if (image.getWidth() > image.getHeight() ){ // determine portrait or landscape orientation
@@ -244,30 +246,30 @@ void sign::draw(int x, int y, int z, int scale ){
     // ofTranslate(x-width/2.0,  y-height/2.0, z);
     ofTranslate(x, y, z);
     // ofRotateYDeg(-mapRotationXY + 180);
-    ofTranslate(-width/2.0,  -height/2.0, 0);
+   // ofTranslate(-width/2.0,  -height/2.0, 0);
     
     ofPushStyle();
-    ofSetColor(0, 0, 0, 100);
+    ofSetColor(SIGN_SHADOW_COLOR, 100);
     ofFill();
-    ofDrawRectangle( offset, offset, width, height); // draw offset drop shadow
-    
-    
+    ofDrawRectangle( dropShadowOffset, dropShadowOffset, width, height); // draw offset drop shadow
     
     if (isMouseOver()){ // draw date label if we are rolling over this image
-        ofSetColor(0, 0, 0, 255);
+        ofSetColor(SIGN_LABEL_COLOR, 255);
         signLabel = ofToString( exifData.DateTime ) ;
         //signFont.drawString(signLabel, width/2, height + 10);
-        ofDrawBitmapString(signLabel, 0, height +  offset *2);
+        ofDrawBitmapString(signLabel, 0, height +  dropShadowOffset *2);
     }
     
     ofPopStyle();
+    ofFill();
+    ofDrawCircle(0 - mapDotRadius/2.0, 0 - mapDotRadius/2.0, 0, mapDotRadius);
+  //  ofDrawLine(0, 0, 0, -width, -height, 1);
     image.draw( 0, 0, 1, width, height) ;
+    
     ofPopMatrix();
     
-    
-    ofRect(x - width/2, y-height/2, width, height); // set up MSAInteractiveObject
-    set(x - width/2, y-height/2, width, height);
-    
+    ofRect(x, y, width, height); // set up MSAInteractiveObject
+    set(x, y, width, height);
 }
 
 //--------------------------------------------------------------
