@@ -42,7 +42,7 @@ class sign : public ofxMSAInteractiveObject{
     bool isLandscape(); // getter and setter functions
     float getLat();
     float getLong();
-    float getDate();
+    string getDate();
     string getTime();
     void draw(int x, int y, int z, int scale);
     void load(string filePath);
@@ -89,6 +89,8 @@ public:
     void draw() override;
     void keyPressed(int key) override;
 
+    static bool sortOnDate(const sign &a, const sign &b);
+    
     std::shared_ptr<ofxMaps::MBTilesCache> bufferCache;
     std::shared_ptr<ofxMaps::MapTileLayer> tileLayer;
     std::shared_ptr<ofxMaps::MapTileSet> tileSet;
@@ -101,11 +103,15 @@ public:
     
     void processOpenFileSelection(ofFileDialogResult openFileResult);
     void sortSigns();
-    static  bool sortDescending(const sign &i, const sign &j);
+    static bool sortDescending(const sign &i, const sign &j);
+    void drawTimePath();
     
     vector<sign> signsOfSurveillance;
     float signScale, signDist ;
     bool b_showGui;
     
     ofEasyCam cam;
+    
+    vector<ofVec2f> datePath;
+    
 };

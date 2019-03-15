@@ -31,6 +31,8 @@ void ofApp::setup()
     
     signScale = signDist = 100.0;
     b_showGui = true;
+    
+   // cam.setGlobalPosition(- ofGetWidth()/2.0, -ofGetHeight()/2.0, 100);
 }
 
 //--------------------------------------------------------------
@@ -53,20 +55,26 @@ void ofApp::draw()
     //ofTranslate(-tileLayer->getWidth() / 2, -tileLayer->getHeight() / 2);
     tileLayer->draw(0, 0);
     ofPopMatrix();
-    
+    datePath.clear();
     // draw city name in place
-    ofxGeo::Coordinate chicago(41.8827, -87.6233);
-    auto chi = tileLayer->geoToPixels(chicago);
-    ofDrawBitmapString("chicago", chi.x, chi.y);
+//   // ofxGeo::Coordinate chicago(41.8827, -87.6233);
+//    auto chi = tileLayer->geoToPixels(chicago);
+//    ofDrawBitmapString("chicago", chi.x, chi.y);
     
     // draw signs in place
     for(unsigned int i = 0; i < signsOfSurveillance.size(); i++){
         ofxGeo::Coordinate signGeo(signsOfSurveillance[i].getLat(), signsOfSurveillance[i].getLong());
         auto  signPos = tileLayer->geoToPixels(signGeo);
         signsOfSurveillance[i].draw(signPos.x, signPos.y, 1, signScale);
+        ofVec2f newPoint(signPos.x, signPos.y);
+       
+        datePath.push_back(newPoint); // add a position of a sign into the vector for drawing a path of positions
     }
+   
    // cam.end();
     ofDisableDepthTest();
+    
+    drawTimePath();
     
     if (b_showGui){
         ofDrawBitmapStringHighlight(ofToString(signsOfSurveillance.size() ) + " signs displayed", 14, ofGetHeight() - 48);
@@ -74,6 +82,35 @@ void ofApp::draw()
         ofDrawBitmapStringHighlight("Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16);
         ofDrawBitmapStringHighlight("Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2);
     }
+}
+
+//--------------------------------------------------------------
+
+
+void ofApp::drawTimePath(){
+    ofPushStyle();
+    ofSetHexColor(0x2bdbe6);
+    ofNoFill();
+    ofBeginShape(); // draw a bezier path to follow the positons of signs on the map
+    
+    for (int i = 0; i < datePath.size(); i++){
+        
+//        if (i == 0){
+//            ofCurveVertex(datePath[0].x, datePath[0].y); // we need to duplicate 0 for the curve to start at point 0
+//            ofCurveVertex(datePath[0].x, datePath[0].y); // we need to duplicate 0 for the curve to start at point 0
+//        } else if (i == datePath.size()-1){
+//            ofCurveVertex(datePath[i].x, datePath[i].y);
+//            ofCurveVertex(datePath[0].x, datePath[0].y);    // to draw a curve from pt 6 to pt 0
+//            ofCurveVertex(datePath[0].x, datePath[0].y);    // we duplicate the first point twice
+//        } else {
+            ofCurveVertex(datePath[i].x, datePath[i].y);
+        
+        //}
+       // ofVertex(datePath[i].x, datePath[i].y,1);
+    }
+    
+    ofEndShape();
+    ofPopStyle();
 }
 
 //--------------------------------------------------------------
@@ -185,6 +222,7 @@ void sign::load(string imagePath){
 //--------------------------------------------------------------
 bool sign::isLandscape(){
     // return bool for image orientation
+    return false;
 }
 
 //--------------------------------------------------------------
@@ -198,8 +236,8 @@ float sign::getLong(){
 }
 
 //--------------------------------------------------------------
-float sign::getDate(){
-    
+string  sign::getDate(){
+    return  exifData.DateTime;
 }
 
 //--------------------------------------------------------------
@@ -210,6 +248,7 @@ string sign::getTime(){
 //--------------------------------------------------------------
 string sign::getCountry(){
     // calculate country
+    return "null-country";
 }
 
 //--------------------------------------------------------------
@@ -220,7 +259,7 @@ void sign::draw(int x, int y, int z, int scale ){
     if (isMouseOver() ) {
         cout << "mouseover" << this << endl;
         scale *=4;
-      //  dropShadowOffset = 10;
+        //  dropShadowOffset = 10;
         z=2;
     }
     
@@ -246,7 +285,7 @@ void sign::draw(int x, int y, int z, int scale ){
     // ofTranslate(x-width/2.0,  y-height/2.0, z);
     ofTranslate(x, y, z);
     // ofRotateYDeg(-mapRotationXY + 180);
-   // ofTranslate(-width/2.0,  -height/2.0, 0);
+    // ofTranslate(-width/2.0,  -height/2.0, 0);
     
     ofPushStyle();
     ofSetColor(SIGN_SHADOW_COLOR, 100);
@@ -255,7 +294,8 @@ void sign::draw(int x, int y, int z, int scale ){
     
     if (isMouseOver()){ // draw date label if we are rolling over this image
         ofSetColor(SIGN_LABEL_COLOR, 255);
-        signLabel = ofToString( exifData.DateTime ) ;
+        signLabel = getDate();
+        //signLabel = ofToString( exifData.DateTime ) ;
         //signFont.drawString(signLabel, width/2, height + 10);
         ofDrawBitmapString(signLabel, 0, height +  dropShadowOffset *2);
     }
@@ -263,7 +303,7 @@ void sign::draw(int x, int y, int z, int scale ){
     ofPopStyle();
     ofFill();
     ofDrawCircle(0 - mapDotRadius/2.0, 0 - mapDotRadius/2.0, 0, mapDotRadius);
-  //  ofDrawLine(0, 0, 0, -width, -height, 1);
+    //  ofDrawLine(0, 0, 0, -width, -height, 1);
     image.draw( 0, 0, 1, width, height) ;
     
     ofPopMatrix();
@@ -304,3 +344,35 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult){
 }
 
 //--------------------------------------------------------------
+
+bool ofApp::sortOnDate(const sign &a, const sign &b) {
+    
+//    int resultCompare;
+//
+//    //return (int)a.exifData.DateTime > (int)b.exifData.DateTime;
+//    char d1 = ofToChar( a.exifData.DateTime ) ;
+//    char d2 = ofToChar( b.exifData.DateTime ) ;
+//
+//    // return true or false
+//
+////    int date_cmp(const char *d1, const char *d2)  // date string compeare example
+//        // compare years
+//    resultCompare = std::strncmp(d1 + 6, d2 + 6, 4);
+//        if (resultCompare != 0)
+//            return resultCompare;
+//        // compare months
+//    resultCompare = std::strncmp(d1 + 3, d2 + 3, 2);
+//        if (resultCompare != 0)
+//            return resultCompare;
+//
+//        // compare days
+//    return std::strncmp(d1, d2, 2);
+    
+
+}
+
+//
+//if(key == '3')     {
+//    sortTypeInfo = "sorting on date ";
+//    ofSort(signsOfSurveillance, ofApp::sortOnDate);
+//}
