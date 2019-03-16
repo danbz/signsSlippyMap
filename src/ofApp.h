@@ -27,6 +27,7 @@
 #define        DOWN_COLOR        0xFF0000
 #define        SIGN_SHADOW_COLOR 0x000000
 #define        SIGN_LABEL_COLOR   0xFFFFFF
+#define        DATE_PATH_COLOR   00000000
 
 
 
@@ -104,11 +105,11 @@ public:
     void processOpenFileSelection(ofFileDialogResult openFileResult);
     void sortSigns();
     static bool sortDescending(const sign &i, const sign &j);
-    void drawTimePath();
+    void drawDatePath();
     
     vector<sign> signsOfSurveillance;
     float signScale, signDist ;
-    bool b_showGui;
+    bool b_showGui, b_showDatePath;
     
     ofEasyCam cam;
     

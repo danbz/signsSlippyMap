@@ -39,7 +39,7 @@ void ofApp::setup()
     
     signScale = signDist = 100.0;
     b_showGui = true;
-    
+    b_showDatePath = false;
     // cam.setGlobalPosition(- ofGetWidth()/2.0, -ofGetHeight()/2.0, 100);
 }
 
@@ -82,7 +82,7 @@ void ofApp::draw()
     // cam.end();
     ofDisableDepthTest();
     
-    drawTimePath();
+    if ( b_showDatePath) drawDatePath();
     
     if (b_showGui){
         ofDrawBitmapStringHighlight(ofToString(signsOfSurveillance.size() ) + " signs displayed", 14, ofGetHeight() - 48);
@@ -94,20 +94,17 @@ void ofApp::draw()
 
 //--------------------------------------------------------------
 
-
-void ofApp::drawTimePath(){
+void ofApp::drawDatePath(){
     ofPushStyle();
-    ofSetHexColor(0x2bdbe6);
+    //ofSetHexColor(0x2bdbe6);
+    ofSetHexColor(DATE_PATH_COLOR);
+    ofSetLineWidth(4);
     ofNoFill();
     ofBeginShape(); // draw a bezier path to follow the positons of signs on the map
-    
     for (int i = 0; i < datePath.size(); i++){
-        
-        ofCurveVertex(datePath[i].x, datePath[i].y);
-        
-        // ofVertex(datePath[i].x, datePath[i].y,1);
+        ofCurveVertex(datePath[i].x, datePath[i].y); // catmull calculated curves between points
+        // ofVertex(datePath[i].x, datePath[i].y,1); // straight lines between points
     }
-    
     ofEndShape();
     ofPopStyle();
 }
@@ -168,7 +165,8 @@ void ofApp::keyPressed(int key)
             break;
             
         case 'p':
-            ofSort(signsOfSurveillance, ofApp::sortOnDate);
+            b_showDatePath = !b_showDatePath;
+          //  ofSort(signsOfSurveillance, ofApp::sortOnDate); // this breaks...
             break;
             
         case OF_KEY_UP:
@@ -240,12 +238,12 @@ float sign::getLong(){
 
 //--------------------------------------------------------------
 string  sign::getDate(){
-    return  exifData.DateTime;
+    return  ofToString( exifData.DateTime );
 }
 
 //--------------------------------------------------------------
 string sign::getTime(){
-    return exifData.DateTimeOriginal;
+    return ofToString( exifData.DateTimeOriginal );
 };
 
 //--------------------------------------------------------------
@@ -297,7 +295,7 @@ void sign::draw(int x, int y, int z, int scale ){
     
     if (isMouseOver()){ // draw date label if we are rolling over this image
         ofSetColor(SIGN_LABEL_COLOR, 255);
-        signLabel = getDate();
+        signLabel = getDate() ;
         //signLabel = ofToString( exifData.DateTime ) ;
         //signFont.drawString(signLabel, width/2, height + 10);
         ofDrawBitmapString(signLabel, 0, height +  dropShadowOffset *2);
@@ -355,47 +353,59 @@ bool ofApp::sortOnDate(const sign &a, const sign &b) {
     //return (int)a.exifData.DateTime > (int)b.exifData.DateTime;
     string d1 = a.exifData.DateTime  ;
     string d2 = b.exifData.DateTime  ;
-    if (d1!="" and d2 !=""){
-        const string search = ":";
-        const string replace = "/";
-        ofStringReplace(d1, search, replace);
-        ofStringReplace(d2, search, replace);
-        
-        // return true or false
-        
-        //    //    int date_cmp(const char *d1, const char *d2)  // date string compeare example
-        //            // compare years
-        //        resultCompare = std::strncmp(d1 , d2 , 4);
-        //            if (resultCompare != 0)
-        //                return resultCompare;
-        //            // compare months
-        //        resultCompare = std::strncmp(d1 + 3, d2 + 3, 2);
-        //            if (resultCompare != 0)
-        //                return resultCompare;
-        //
-        //            // compare days
-        //        return std::strncmp(d1, d2, 2);
-        
-        //std::chrono::system_clock::time_point
-        char dateOnly[20];
-        auto date1 = year( d1.copy(dateOnly,0,9) );
-        //auto date1 = year(2019)/01/21;
-        auto date2 = year( d2.copy(dateOnly,0,9) );
-        //auto date2 = year(2019)/01/21;
-        if (date2 > date1){
-            // std::cout << "date 1 is earlier "  << '\n';
-            return true;
-        }
-        else { // (date2 < date1)
-            //std::cout << "date 2 is earlier "  << '\n';
-            return false;
-            
-        }
-    }
-    return false;
-    //    else
-    //        cout << " date 1 and date 2 are the same" << endl;
-    // compare time of day
+//    if (d1== "" or d2 == ""){
+//        if (d1==""){
+//            cout << "No-DATE EXIF ERROR: " << ofToString( a.exifData.DateTime) << ofToString(a.exifData);
+//        } else {
+//            cout << "No-DATE EXIF ERROR: " << ofToString( b.exifData.DateTime) << ofToString(b.exifData);
+//
+//        }
+//    } else {
+//        const string search = ":";
+//        const string replace = "/";
+//        ofStringReplace(d1, search, replace);
+//        ofStringReplace(d2, search, replace);
+//
+//        // return true or false
+//
+//        //    //    int date_cmp(const char *d1, const char *d2)  // date string compeare example
+//        //            // compare years
+//        //        resultCompare = std::strncmp(d1 , d2 , 4);
+//        //            if (resultCompare != 0)
+//        //                return resultCompare;
+//        //            // compare months
+//        //        resultCompare = std::strncmp(d1 + 3, d2 + 3, 2);
+//        //            if (resultCompare != 0)
+//        //                return resultCompare;
+//        //
+//        //            // compare days
+//        //        return std::strncmp(d1, d2, 2);
+//
+//        //std::chrono::system_clock::time_point
+//        char dateOnly[20];
+//        // need to construct the dates correctly into date type format
+//        char year1 = d1.copy(dateOnly,0,4) ;
+//        //auto date1 = year(2019)/01/21;
+//        char year2 = d2.copy(dateOnly,0,4) ;
+//        char monthDay1 =d1.copy(dateOnly,5,5);
+//        date::year_month_day date1 = year(  year1 && ")" && monthDay1 );
+//        date::year_month_day date2 = year(  year2 ) && d2.copy(dateOnly,5,5) );
+//
+//        //auto date2 = year(2019)/01/21;
+//        if (date2 > date1){
+//            // std::cout << "date 1 is earlier "  << '\n';
+//            return true;
+//        }
+//        else { // (date2 < date1)
+//            //std::cout << "date 2 is earlier "  << '\n';
+//            return false;
+//
+//        }
+//    }
+//    return false;
+//    //    else
+//    //        cout << " date 1 and date 2 are the same" << endl;
+//    // compare time of day
     
 }
 
