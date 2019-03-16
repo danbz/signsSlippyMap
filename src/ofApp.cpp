@@ -12,6 +12,14 @@
  */
 
 #include "ofApp.h"
+#include "date.h"
+#include <iostream>
+#include <string>
+
+
+using namespace date;
+using namespace std::chrono;
+using namespace literals;
 
 void ofApp::setup()
 {
@@ -32,7 +40,7 @@ void ofApp::setup()
     signScale = signDist = 100.0;
     b_showGui = true;
     
-   // cam.setGlobalPosition(- ofGetWidth()/2.0, -ofGetHeight()/2.0, 100);
+    // cam.setGlobalPosition(- ofGetWidth()/2.0, -ofGetHeight()/2.0, 100);
 }
 
 //--------------------------------------------------------------
@@ -57,9 +65,9 @@ void ofApp::draw()
     ofPopMatrix();
     datePath.clear();
     // draw city name in place
-//   // ofxGeo::Coordinate chicago(41.8827, -87.6233);
-//    auto chi = tileLayer->geoToPixels(chicago);
-//    ofDrawBitmapString("chicago", chi.x, chi.y);
+    //   // ofxGeo::Coordinate chicago(41.8827, -87.6233);
+    //    auto chi = tileLayer->geoToPixels(chicago);
+    //    ofDrawBitmapString("chicago", chi.x, chi.y);
     
     // draw signs in place
     for(unsigned int i = 0; i < signsOfSurveillance.size(); i++){
@@ -67,11 +75,11 @@ void ofApp::draw()
         auto  signPos = tileLayer->geoToPixels(signGeo);
         signsOfSurveillance[i].draw(signPos.x, signPos.y, 1, signScale);
         ofVec2f newPoint(signPos.x, signPos.y);
-       
+        
         datePath.push_back(newPoint); // add a position of a sign into the vector for drawing a path of positions
     }
-   
-   // cam.end();
+    
+    // cam.end();
     ofDisableDepthTest();
     
     drawTimePath();
@@ -95,18 +103,9 @@ void ofApp::drawTimePath(){
     
     for (int i = 0; i < datePath.size(); i++){
         
-//        if (i == 0){
-//            ofCurveVertex(datePath[0].x, datePath[0].y); // we need to duplicate 0 for the curve to start at point 0
-//            ofCurveVertex(datePath[0].x, datePath[0].y); // we need to duplicate 0 for the curve to start at point 0
-//        } else if (i == datePath.size()-1){
-//            ofCurveVertex(datePath[i].x, datePath[i].y);
-//            ofCurveVertex(datePath[0].x, datePath[0].y);    // to draw a curve from pt 6 to pt 0
-//            ofCurveVertex(datePath[0].x, datePath[0].y);    // we duplicate the first point twice
-//        } else {
-            ofCurveVertex(datePath[i].x, datePath[i].y);
+        ofCurveVertex(datePath[i].x, datePath[i].y);
         
-        //}
-       // ofVertex(datePath[i].x, datePath[i].y,1);
+        // ofVertex(datePath[i].x, datePath[i].y,1);
     }
     
     ofEndShape();
@@ -166,6 +165,10 @@ void ofApp::keyPressed(int key)
             
         case '3':
             animation = 0;
+            break;
+            
+        case 'p':
+            ofSort(signsOfSurveillance, ofApp::sortOnDate);
             break;
             
         case OF_KEY_UP:
@@ -346,29 +349,54 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult){
 //--------------------------------------------------------------
 
 bool ofApp::sortOnDate(const sign &a, const sign &b) {
+    //format is   yyyy:mm:dd hh:mm:ss
+    int resultCompare;
     
-//    int resultCompare;
-//
-//    //return (int)a.exifData.DateTime > (int)b.exifData.DateTime;
-//    char d1 = ofToChar( a.exifData.DateTime ) ;
-//    char d2 = ofToChar( b.exifData.DateTime ) ;
-//
-//    // return true or false
-//
-////    int date_cmp(const char *d1, const char *d2)  // date string compeare example
-//        // compare years
-//    resultCompare = std::strncmp(d1 + 6, d2 + 6, 4);
-//        if (resultCompare != 0)
-//            return resultCompare;
-//        // compare months
-//    resultCompare = std::strncmp(d1 + 3, d2 + 3, 2);
-//        if (resultCompare != 0)
-//            return resultCompare;
-//
-//        // compare days
-//    return std::strncmp(d1, d2, 2);
+    //return (int)a.exifData.DateTime > (int)b.exifData.DateTime;
+    string d1 = a.exifData.DateTime  ;
+    string d2 = b.exifData.DateTime  ;
+    if (d1!="" and d2 !=""){
+        const string search = ":";
+        const string replace = "/";
+        ofStringReplace(d1, search, replace);
+        ofStringReplace(d2, search, replace);
+        
+        // return true or false
+        
+        //    //    int date_cmp(const char *d1, const char *d2)  // date string compeare example
+        //            // compare years
+        //        resultCompare = std::strncmp(d1 , d2 , 4);
+        //            if (resultCompare != 0)
+        //                return resultCompare;
+        //            // compare months
+        //        resultCompare = std::strncmp(d1 + 3, d2 + 3, 2);
+        //            if (resultCompare != 0)
+        //                return resultCompare;
+        //
+        //            // compare days
+        //        return std::strncmp(d1, d2, 2);
+        
+        //std::chrono::system_clock::time_point
+        char dateOnly[20];
+        auto date1 = year( d1.copy(dateOnly,0,9) );
+        //auto date1 = year(2019)/01/21;
+        auto date2 = year( d2.copy(dateOnly,0,9) );
+        //auto date2 = year(2019)/01/21;
+        if (date2 > date1){
+            // std::cout << "date 1 is earlier "  << '\n';
+            return true;
+        }
+        else { // (date2 < date1)
+            //std::cout << "date 2 is earlier "  << '\n';
+            return false;
+            
+        }
+    }
+    return false;
+    //    else
+    //        cout << " date 1 and date 2 are the same" << endl;
+    // compare time of day
     
-
 }
 
 //
