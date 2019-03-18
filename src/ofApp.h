@@ -47,10 +47,11 @@ class sign : public ofxMSAInteractiveObject{
     string getTime();
     void draw(int x, int y, int z, int scale);
     void load(string filePath);
+    string lookUpCountry();
     string getCountry();
-    
     float  dropShadowOffset;
     int mapDotRadius;
+    string country;
 
     //  ofxMSAInteractive event responses for sign
     virtual void onRollOver(int x, int y) {

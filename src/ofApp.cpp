@@ -13,8 +13,8 @@
 
 #include "ofApp.h"
 #include "date.h"
-#include <iostream>
-#include <string>
+//#include <iostream>
+//#include <string>
 
 
 using namespace date;
@@ -23,6 +23,7 @@ using namespace literals;
 
 void ofApp::setup()
 {
+    // set up the tile map provider details and buffer cache for map segments
     ofJson json = ofLoadJson("provider.json");
     tileProvider = std::make_shared<ofxMaps::MapTileProvider>(ofxMaps::MapTileProvider::fromJSON(json));
     Poco::ThreadPool::defaultPool().addCapacity(64);
@@ -30,9 +31,9 @@ void ofApp::setup()
     tileSet = std::make_shared<ofxMaps::MapTileSet>(1024, tileProvider, bufferCache);
     tileLayer = std::make_shared<ofxMaps::MapTileLayer>(tileSet, 1 * 1920, 1 * 1080);
     
-    ofxGeo::Coordinate chicago(41.8827, -87.6233);
-    ofxGeo::Coordinate bethel(45.0579, -93.1605);
-    ofxGeo::Coordinate amsterdam(52.370216, 4.895168);
+//    ofxGeo::Coordinate chicago(41.8827, -87.6233);
+//    ofxGeo::Coordinate bethel(45.0579, -93.1605);
+//    ofxGeo::Coordinate amsterdam(52.370216, 4.895168);
     ofxGeo::Coordinate bristol(51.454514, -2.587910);
     
     tileLayer->setCenter(bristol, 15);
@@ -78,23 +79,23 @@ void ofApp::draw()
         
         datePath.push_back(newPoint); // add a position of a sign into the vector for drawing a path of positions
     }
-    
     // cam.end();
     ofDisableDepthTest();
     
-    if ( b_showDatePath) drawDatePath();
+  //  if ( b_showDatePath) drawDatePath(); // show path for dates of sign photos
     
-    if (b_showGui){
-        ofDrawBitmapStringHighlight(ofToString(signsOfSurveillance.size() ) + " signs displayed", 14, ofGetHeight() - 48);
-        ofDrawBitmapStringHighlight(tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
-        ofDrawBitmapStringHighlight("Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16);
-        ofDrawBitmapStringHighlight("Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2);
+    if (b_showGui){ // draw debug text
+        ofDrawBitmapString( "hello", 14, ofGetHeight() - 58);
+       // ofDrawBitmapStringHighlight( ofToString(signsOfSurveillance.size() ) + " signs displayed", 14, ofGetHeight() - 48 );
+//        ofDrawBitmapStringHighlight( tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
+//        ofDrawBitmapStringHighlight( "Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16) ;
+//        ofDrawBitmapStringHighlight( "Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2 );
     }
 }
 
 //--------------------------------------------------------------
 
-void ofApp::drawDatePath(){
+void ofApp::drawDatePath(){ // draw a path to show the recording dates of images
     ofPushStyle();
     //ofSetHexColor(0x2bdbe6);
     ofSetHexColor(DATE_PATH_COLOR);
@@ -218,6 +219,11 @@ void sign::load(string imagePath){
     // input routine here to resize images to target size if not already resized...
     // image.resize(image.getWidth()/imageScaleFactor, image.getHeight()/imageScaleFactor);
     exifData =  getEXIF(imagePath);     // load XML from jpg
+    
+    country = lookUpCountry();
+    if (country == "null"){
+        cout << "country lookup failed"<< endl;
+    }
 }
 
 //--------------------------------------------------------------
@@ -247,9 +253,35 @@ string sign::getTime(){
 };
 
 //--------------------------------------------------------------
+
 string sign::getCountry(){
-    // calculate country
-    return "null-country";
+    return country;
+
+}
+//--------------------------------------------------------------
+string sign::lookUpCountry(){
+    // calculate country using geonames web api
+    // get lat long of requested country
+    // ofHttpResponse loadResult = ofLoadURL("http://api.geonames.org/countrySubdivision?lat=47.03&lng=10.2&username=demo");
+
+    ofHttpResponse loadResult = ofLoadURL("http://api.geonames.org/countrySubdivision?lat=" + ofToString( getLat() ) + "&lng=" + ofToString( getLong() ) + "&username=danb");
+    cout << "result of country code request : " << ofToString( loadResult.data) << endl;
+    
+    if(loadResult.status==200 ){
+        // if our web request works the set up the text returned
+        string   content = loadResult.data;
+        cout << "result of country code request name parsed" << ofToString( loadResult.request.name)  << endl;
+       // setupWords(content);
+        
+        return content;
+        
+       // loading=false;
+    }else{
+        
+        cout << loadResult.status << " " << loadResult.error << " error for request " << loadResult.request.name << endl;
+       // if(loadResult.status!=-1) loading=false;
+        return "null";
+    }
 }
 
 //--------------------------------------------------------------
@@ -295,7 +327,7 @@ void sign::draw(int x, int y, int z, int scale ){
     
     if (isMouseOver()){ // draw date label if we are rolling over this image
         ofSetColor(SIGN_LABEL_COLOR, 255);
-        signLabel = getDate() ;
+        signLabel = getDate() + " " + country;
         //signLabel = ofToString( exifData.DateTime ) ;
         //signFont.drawString(signLabel, width/2, height + 10);
         ofDrawBitmapString(signLabel, 0, height +  dropShadowOffset *2);
@@ -347,7 +379,8 @@ void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult){
 //--------------------------------------------------------------
 
 bool ofApp::sortOnDate(const sign &a, const sign &b) {
-    //format is   yyyy:mm:dd hh:mm:ss
+    // sort the vector of sign objects based on their original recording dates
+    // format for exif xml date data is   yyyy:mm:dd hh:mm:ss
     int resultCompare;
     
     //return (int)a.exifData.DateTime > (int)b.exifData.DateTime;
@@ -402,15 +435,10 @@ bool ofApp::sortOnDate(const sign &a, const sign &b) {
 //
 //        }
 //    }
-//    return false;
+   return false;
 //    //    else
 //    //        cout << " date 1 and date 2 are the same" << endl;
 //    // compare time of day
     
 }
 
-//
-//if(key == '3')     {
-//    sortTypeInfo = "sorting on date ";
-//    ofSort(signsOfSurveillance, ofApp::sortOnDate);
-//}
