@@ -45,10 +45,12 @@ class sign : public ofxMSAInteractiveObject{
     float getLong();
     string getDate();
     string getTime();
+    string getCountry();
+
     void draw(int x, int y, int z, int scale);
     void load(string filePath);
     string lookUpCountry();
-    string getCountry();
+    
     float  dropShadowOffset;
     int mapDotRadius;
     string country;

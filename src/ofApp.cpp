@@ -13,8 +13,8 @@
 
 #include "ofApp.h"
 #include "date.h"
-//#include <iostream>
-//#include <string>
+#include <iostream>
+#include <string>
 
 
 using namespace date;
@@ -31,9 +31,9 @@ void ofApp::setup()
     tileSet = std::make_shared<ofxMaps::MapTileSet>(1024, tileProvider, bufferCache);
     tileLayer = std::make_shared<ofxMaps::MapTileLayer>(tileSet, 1 * 1920, 1 * 1080);
     
-//    ofxGeo::Coordinate chicago(41.8827, -87.6233);
-//    ofxGeo::Coordinate bethel(45.0579, -93.1605);
-//    ofxGeo::Coordinate amsterdam(52.370216, 4.895168);
+    ofxGeo::Coordinate chicago(41.8827, -87.6233);
+    ofxGeo::Coordinate bethel(45.0579, -93.1605);
+    ofxGeo::Coordinate amsterdam(52.370216, 4.895168);
     ofxGeo::Coordinate bristol(51.454514, -2.587910);
     
     tileLayer->setCenter(bristol, 15);
@@ -41,13 +41,13 @@ void ofApp::setup()
     signScale = signDist = 100.0;
     b_showGui = true;
     b_showDatePath = false;
-    // cam.setGlobalPosition(- ofGetWidth()/2.0, -ofGetHeight()/2.0, 100);
 }
 
 //--------------------------------------------------------------
 
 void ofApp::update()
 {
+   
     tileLayer->update();
     
     if (!ofIsFloatEqual(animation, 0.f))
@@ -85,11 +85,11 @@ void ofApp::draw()
   //  if ( b_showDatePath) drawDatePath(); // show path for dates of sign photos
     
     if (b_showGui){ // draw debug text
-        ofDrawBitmapString( "hello", 14, ofGetHeight() - 58);
-       // ofDrawBitmapStringHighlight( ofToString(signsOfSurveillance.size() ) + " signs displayed", 14, ofGetHeight() - 48 );
-//        ofDrawBitmapStringHighlight( tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
-//        ofDrawBitmapStringHighlight( "Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16) ;
-//        ofDrawBitmapStringHighlight( "Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2 );
+        ofDrawBitmapStringHighlight( "hello", 14, ofGetHeight() - 58);
+        ofDrawBitmapStringHighlight( ofToString(signsOfSurveillance.size() ) + " signs displayed", 14, ofGetHeight() - 48 );
+        ofDrawBitmapStringHighlight( tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
+        ofDrawBitmapStringHighlight( "Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16) ;
+        ofDrawBitmapStringHighlight( "Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2 );
     }
 }
 
