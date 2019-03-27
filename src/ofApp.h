@@ -31,6 +31,7 @@
 
 
 
+
 class sign : public ofxMSAInteractiveObject{
     public :
     
@@ -117,5 +118,6 @@ public:
     ofEasyCam cam;
     
     vector<ofVec2f> datePath;
+    ofTrueTypeFont  fontDIN;
     
 };

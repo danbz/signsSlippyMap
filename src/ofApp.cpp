@@ -41,6 +41,8 @@ void ofApp::setup()
     signScale = signDist = 100.0;
     b_showGui = true;
     b_showDatePath = false;
+    
+    fontDIN.load("DIN.otf", 18);
 }
 
 //--------------------------------------------------------------
@@ -82,14 +84,17 @@ void ofApp::draw()
     // cam.end();
     ofDisableDepthTest();
     
-  //  if ( b_showDatePath) drawDatePath(); // show path for dates of sign photos
+    if ( b_showDatePath) drawDatePath(); // show path for dates of sign photos
     
     if (b_showGui){ // draw debug text
-        ofDrawBitmapStringHighlight( "hello", 14, ofGetHeight() - 58);
-        ofDrawBitmapStringHighlight( ofToString(signsOfSurveillance.size() ) + " signs displayed", 14, ofGetHeight() - 48 );
-        ofDrawBitmapStringHighlight( tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
-        ofDrawBitmapStringHighlight( "Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16) ;
-        ofDrawBitmapStringHighlight( "Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2 );
+        fontDIN.drawString( ofToString(signsOfSurveillance.size() ) + " signs displayed", 14, ofGetHeight() - 48 );
+        fontDIN.drawString( tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
+        fontDIN.drawString( "Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16) ;
+        fontDIN.drawString( "Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2 );
+//        ofDrawBitmapStringHighlight( ofToString(signsOfSurveillance.size() ) + " signs displayed", 14, ofGetHeight() - 48 );
+//        ofDrawBitmapStringHighlight( tileLayer->getCenter().toString(0), 14, ofGetHeight() - 32);
+//        ofDrawBitmapStringHighlight( "Task Queue:" + ofx::TaskQueue::instance().toString(), 14, ofGetHeight() - 16) ;
+//        ofDrawBitmapStringHighlight( "Connection Pool: " + bufferCache->toString(), 14, ofGetHeight() - 2 );
     }
 }
 
@@ -260,28 +265,28 @@ string sign::getCountry(){
 }
 //--------------------------------------------------------------
 string sign::lookUpCountry(){
-    // calculate country using geonames web api
-    // get lat long of requested country
-    // ofHttpResponse loadResult = ofLoadURL("http://api.geonames.org/countrySubdivision?lat=47.03&lng=10.2&username=demo");
-
-    ofHttpResponse loadResult = ofLoadURL("http://api.geonames.org/countrySubdivision?lat=" + ofToString( getLat() ) + "&lng=" + ofToString( getLong() ) + "&username=danb");
-    cout << "result of country code request : " << ofToString( loadResult.data) << endl;
-    
-    if(loadResult.status==200 ){
-        // if our web request works the set up the text returned
-        string   content = loadResult.data;
-        cout << "result of country code request name parsed" << ofToString( loadResult.request.name)  << endl;
-       // setupWords(content);
-        
-        return content;
-        
-       // loading=false;
-    }else{
-        
-        cout << loadResult.status << " " << loadResult.error << " error for request " << loadResult.request.name << endl;
-       // if(loadResult.status!=-1) loading=false;
-        return "null";
-    }
+//    // calculate country using geonames web api
+//    // get lat long of requested country
+//
+//    // ofHttpResponse loadResult = ofLoadURL("http://api.geonames.org/countryCode?lat=47.03&lng=10.2&username=danb&type=xml");
+//    ofXmlSettings content;
+//
+//    ofHttpResponse loadResult = ofLoadURL("http://api.geonames.org/countryCode?lat=" + ofToString( getLat() ) + "&lng=" + ofToString( getLong() ) + "&username=danb&type=xml");
+//    cout << "result of country code request : " << ofToString( loadResult.data) << endl;
+//    
+//    if(loadResult.status==200 ){
+//        // if our web request works the set up the text returned
+//        content = ofXmlSearchIterator(loadResult.data, "geonames/country/countryName");
+//        ofXml
+//        cout << "result of country code request name parsed" << ofToString( loadResult.data)  << endl;
+//        
+//        //return content;
+//            }else{
+//        
+//        cout << loadResult.status << " " << loadResult.error << " error for request " << loadResult.request.name << endl;
+//       // if(loadResult.status!=-1) loading=false;
+       return "null";
+//    }
 }
 
 //--------------------------------------------------------------
@@ -330,7 +335,7 @@ void sign::draw(int x, int y, int z, int scale ){
         signLabel = getDate() + " " + country;
         //signLabel = ofToString( exifData.DateTime ) ;
         //signFont.drawString(signLabel, width/2, height + 10);
-        ofDrawBitmapString(signLabel, 0, height +  dropShadowOffset *2);
+        // ofApp::fontDIN.drawString(signLabel, 0, height +  dropShadowOffset *2);  // question - how to reference TTF from main OfApp class?
     }
     
     ofPopStyle();
